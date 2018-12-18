@@ -73,7 +73,7 @@ class FailedToCreateInputException(Exception):
 class Client(object):
 
     def __init__(self, username=None, password=None, account_name=None,
-                 base_url=None, api_key=None):
+                 base_url=None, api_key=None, timeout=DEFAULT_TIMEOUT):
 
         if api_key and (username or password):
             raise Exception('Authorization should be performed by either an API key or username and password, but not both.')
@@ -93,7 +93,7 @@ class Client(object):
         self.password = password
         self.cookie = None
         self.requests_params = {
-            'timeout': DEFAULT_TIMEOUT,
+            'timeout': timeout,
             'cookies': self.cookie
         }
 
