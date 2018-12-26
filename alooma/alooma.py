@@ -1055,10 +1055,11 @@ class Client(object):
         res = self.__send_request(requests.get, url)
         return parse_response_to_json(res)
 
-    def get_input_by_id(self, input_id):
+    def get_input_by_id(self, input_id, status_report=True):
         """ Return Input Data from Input ID """
+        params = {"status_report": status_report}
         url = self.rest_url + endpoints.INPUT_STATE.format(input_id=input_id)
-        res = self.__send_request(requests.get, url)
+        res = self.__send_request(requests.get, url, params=params)
 
         return parse_response_to_json(res)
 
