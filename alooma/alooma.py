@@ -635,6 +635,11 @@ class Client(object):
                 # notify user of lack of code if not main
                 raise
 
+    def get_requirements(self):
+        url = self.rest_url + 'code-engine/requirements'
+        res = self.__send_request(requests.get, url)
+        return parse_response_to_json(res)
+
     def set_transform(self, transform, module_name='main'):
         warnings.warn('set_transform is deprecated since version 0.4.0 '
                       'and will be removed in version 1.0, please use '
