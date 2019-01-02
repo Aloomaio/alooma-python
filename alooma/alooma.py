@@ -635,7 +635,7 @@ class Client(object):
                 # notify user of lack of code if not main
                 raise
 
-    def get_requirements(self, text_format=False):
+    def get_code_engine_requirements(self, text_format=False):
         url = self.rest_url + 'code-engine/requirements'
         res = self.__send_request(requests.get, url)
         reqs = parse_response_to_json(res)
