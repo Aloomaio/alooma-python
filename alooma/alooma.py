@@ -682,20 +682,7 @@ class Client(object):
                       'and will be removed in version 1.0, please use '
                       'test_code_engine_code instead',
                       DeprecationWarning, stacklevel=2)
-
-        url = self.rest_url + 'transform/functions/run'
-        if temp_transform is None:
-            temp_transform = self.get_transform()
-        if not isinstance(sample, dict):
-            sample = json.loads(sample)
-        data = {
-            'language': 'PYTHON',
-            'functionName': 'main',
-            'code': temp_transform,
-            'sample': sample
-        }
-        res = requests.post(url, json=data, **self.requests_params)
-        return json.loads(res.content)
+        return self.test_code_engine_code(sample, temp_transform)
 
     def test_transform_all_samples(self, event_type=None, status_code=None):
         """
