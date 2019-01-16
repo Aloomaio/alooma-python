@@ -119,6 +119,9 @@ class Client(object):
 
             return self.__send_request(func, url, True, **kwargs)
 
+        if response.status_code == 504:
+            raise TimeoutError(f"The rest call to {url} failed due to timing out after {params.get("timeout")}s")
+
         raise Exception("The rest call to {url} failed\n"
                         "failure reason: {failure_reason}"
                         "{failure_content}"
