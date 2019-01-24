@@ -377,6 +377,18 @@ class Client(object):
         res = self.__send_request(requests.put, url, json=input_post_data)
         return res
 
+    def pause_input_by_id(self, input_id):
+        url = self.rest_url + ('inputs/%s/pause?pause=true' % input_id)
+        res = self.__send_request(requests.put, url)
+
+        return parse_response_to_json(res)
+
+    def resume_input_by_id(self, input_id):
+        url = self.rest_url + ('inputs/%s/pause?pause=false' % input_id)
+        res = self.__send_request(requests.put, url)
+
+        return parse_response_to_json(res)
+
     def create_schema(self, schema_post_data):
         url = self.rest_url + "schemas"
 
