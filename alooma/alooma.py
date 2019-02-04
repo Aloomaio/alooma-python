@@ -64,6 +64,7 @@ MAPPING_TIMEOUT = 300
 
 BASE_URL = 'https://app.alooma.com'
 CUSTOM_CONSOLIDATION_V2 = 'v2/consolidation/custom'
+URL_INPUTS_PAUSE = 'inputs/{input_id}/pause?pause={value}'
 
 
 class FailedToCreateInputException(Exception):
@@ -376,6 +377,20 @@ class Client(object):
         url = self.rest_url + ('inputs/%s' % input_id)
         res = self.__send_request(requests.put, url, json=input_post_data)
         return res
+
+    def pause_input_by_id(self, input_id):
+        url = self.rest_url + URL_INPUTS_PAUSE.format(
+            input_id=input_id, value='true')
+        res = self.__send_request(requests.put, url)
+
+        return parse_response_to_json(res)
+
+    def resume_input_by_id(self, input_id):
+        url = self.rest_url + URL_INPUTS_PAUSE.format(
+            input_id=input_id, value='false')
+        res = self.__send_request(requests.put, url)
+
+        return parse_response_to_json(res)
 
     def create_schema(self, schema_post_data):
         url = self.rest_url + "schemas"
