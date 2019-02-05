@@ -1150,9 +1150,6 @@ class Client(object):
         if 'skipValidation' not in output_config:
             output_config['skipValidation'] = False
 
-        if current_sink_type == OUTPUTS['bigquery']['type']:
-            self.__fix_bigquery_config(output_config)
-
         output_name = output_name if output_name is not None \
             else OUTPUTS[current_sink_type.lower()]['name']
 
@@ -1167,15 +1164,6 @@ class Client(object):
         url = self.rest_url + 'plumbing/nodes/' + output_node['id']
         res = self.__send_request(requests.put, url, json=payload)
         return parse_response_to_json(res)
-
-    def __fix_bigquery_config(self, output_config):
-        config_url = self.rest_url + \
-            'zk-configuration/featureUseBigQueryNewConnectConfiguration'
-        http_res = self.__send_request(requests.get, config_url)
-        json_res = parse_response_to_json(http_res)
-        if not json_res['featureUseBigQueryNewLoginConfiguration']:
-            output_config['databaseName'] = output_config.pop('projectName')
-            output_config['schemaName'] = output_config.pop('datasetName')
 
     def set_output_config(self, hostname, port, schema_name, database_name,
                           username, password, skip_validation=False,
