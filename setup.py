@@ -11,7 +11,7 @@ reqs = [str(ir.req) for ir in install_reqs]
 
 setup(
     name='alooma',
-    version='0.4.12',
+    version='0.4.13',
     description='Alooma python API',
     author='Alooma',
     author_email='support@alooma.io',

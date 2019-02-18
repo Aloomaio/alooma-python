@@ -61,6 +61,7 @@ METRICS_LIST = [
 DEFAULT_TIMEOUT = 60
 
 MAPPING_TIMEOUT = 300
+LOADED_EVENTS_PER_TABLE_TIMEOUT = 300
 
 BASE_URL = 'https://app.alooma.com'
 CUSTOM_CONSOLIDATION_V2 = 'v2/consolidation/custom'
@@ -1664,6 +1665,35 @@ class Client(object):
         """
         url = self.rest_url + "credits/company"
         response = self.__send_request(requests.get, url)
+        return parse_response_to_json(response)
+
+    def get_loaded_events_per_table_by_date(self, from_date=None, to_date=None, all_instances=False):
+        """ Get the number of loaded events per table per day for the asked period
+        for the whole company or for the login instance.
+
+            :param from_date: string (format 'YYYY-MM-DD') or datetime: from date of asked period
+            :param to_date: string (format 'YYYY-MM-DD') or datetime: to date of the asked period, if None: returns until now
+            :param all_instances: boolean: if true, return the loaded events for all instances of the company
+            :return a list of dictionaries, each containing the loaded events per table on a given day
+                  example:
+                    - [{"value":25,"date":"2018-12-13","instance_name":"alooma","table_name":"SAMPLE1.USER_LOG"}, ...]
+        """
+        url = self.rest_url + "events/loaded-events-per-table"
+        sep = '?'
+        if isinstance(from_date, datetime.datetime):
+            from_date = from_date.strftime('%Y-%m-%d')
+        url += '%sfrom=%s' % (sep, from_date)
+        sep = '&'
+        if to_date:
+            if isinstance(to_date, datetime.datetime):
+                to_date = to_date.strftime('%Y-%m-%d')
+            url += '%sto=%s' % (sep, to_date)
+            sep = '&'
+        if all_instances:
+            url += '%sall=%s' % (sep, all_instances)
+            sep = '&'
+        response = self.__send_request(requests.get, url,
+                                       timeout=LOADED_EVENTS_PER_TABLE_TIMEOUT)
         return parse_response_to_json(response)
 
     def get_loaded_events_per_table_summary(self, from_date, to_date=None, all_instances=False):
