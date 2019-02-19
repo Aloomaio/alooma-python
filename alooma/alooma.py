@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import json
 import time
 import re
@@ -66,6 +66,7 @@ LOADED_EVENTS_PER_TABLE_TIMEOUT = 300
 BASE_URL = 'https://app.alooma.com'
 CUSTOM_CONSOLIDATION_V2 = 'v2/consolidation/custom'
 URL_INPUTS_PAUSE = 'inputs/{input_id}/pause?pause={value}'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
 
 class FailedToCreateInputException(Exception):
@@ -1640,12 +1641,12 @@ class Client(object):
         url = self.rest_url + "credits/used-credits"
         sep = '?'
         if from_day:
-            if isinstance(from_day, datetime.datetime):
+            if isinstance(from_day, datetime):
                 from_day = from_day.strftime('%Y-%m-%d')
             url += '%sfrom=%s' % (sep, from_day)
             sep = '&'
         if to_day:
-            if isinstance(to_day, datetime.datetime):
+            if isinstance(to_day, datetime):
                 to_day = to_day.strftime('%Y-%m-%d')
             url += '%sto=%s' % (sep, to_day)
             sep = '&'
@@ -1667,12 +1668,12 @@ class Client(object):
         response = self.__send_request(requests.get, url)
         return parse_response_to_json(response)
 
-    def get_loaded_events_per_table_by_date(self, from_date=None, to_date=None, all_instances=False):
+    def get_loaded_events_per_table_by_day(self, from_day=None, to_day=None, all_instances=False):
         """ Get the number of loaded events per table per day for the asked period
         for the whole company or for the login instance.
 
-            :param from_date: string (format 'YYYY-MM-DD') or datetime: from date of asked period
-            :param to_date: string (format 'YYYY-MM-DD') or datetime: to date of the asked period, if None: returns until now
+            :param from_day: string (format 'YYYY-MM-DD') or datetime: from date of asked period
+            :param to_day: string (format 'YYYY-MM-DD') or datetime: to date of the asked period, if None: returns until now
             :param all_instances: boolean: if true, return the loaded events for all instances of the company
             :return a list of dictionaries, each containing the loaded events per table on a given day
                   example:
@@ -1680,15 +1681,15 @@ class Client(object):
         """
         url = self.rest_url + "events/loaded-events-per-table"
         sep = '?'
-        if from_date:
-            if isinstance(from_date, datetime.datetime):
-                from_date = from_date.strftime('%Y-%m-%d')
-            url += '%sfrom=%s' % (sep, from_date)
+        if from_day:
+            if isinstance(from_day, datetime):
+                from_day = from_day.strftime('%Y-%m-%d')
+            url += '%sfrom=%s' % (sep, from_day)
             sep = '&'
-        if to_date:
-            if isinstance(to_date, datetime.datetime):
-                to_date = to_date.strftime('%Y-%m-%d')
-            url += '%sto=%s' % (sep, to_date)
+        if to_day:
+            if isinstance(to_day, datetime):
+                to_day = to_day.strftime('%Y-%m-%d')
+            url += '%sto=%s' % (sep, to_day)
             sep = '&'
         if all_instances:
             url += '%sall=%s' % (sep, all_instances)
@@ -1718,12 +1719,19 @@ class Client(object):
             raise AssertionError("from_date is mandatory")
         url = self.rest_url + "events/loaded-events-per-table/summary"
         sep = '?'
-        if isinstance(from_date, datetime.datetime):
-            from_date = from_date.strftime('%Y-%m-%dT%H:%M:%S')
+
+        difference = datetime.utcnow() - (from_date
+            if isinstance(from_date, datetime)
+            else datetime.strptime(from_date, DATE_FORMAT))
+        if difference.days >= 7:
+            raise AssertionError("The `from_date` parameter must be within the "
+                                 "last 7 days. For historical data, use the "
+                                 "`get_loaded_events_per_table_by_day` function ")
+        from_date = from_date.strftime(DATE_FORMAT)
         url += '%sfrom=%s' % (sep, from_date)
         sep = '&'
         if to_date:
-            if isinstance(to_date, datetime.datetime):
+            if isinstance(to_date, datetime):
                 to_date = to_date.strftime('%Y-%m-%dT%H:%M:%S')
             url += '%sto=%s' % (sep, to_date)
             sep = '&'
