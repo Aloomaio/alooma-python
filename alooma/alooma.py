@@ -1680,10 +1680,11 @@ class Client(object):
         """
         url = self.rest_url + "events/loaded-events-per-table"
         sep = '?'
-        if isinstance(from_date, datetime.datetime):
-            from_date = from_date.strftime('%Y-%m-%d')
-        url += '%sfrom=%s' % (sep, from_date)
-        sep = '&'
+        if from_date:
+            if isinstance(from_date, datetime.datetime):
+                from_date = from_date.strftime('%Y-%m-%d')
+            url += '%sfrom=%s' % (sep, from_date)
+            sep = '&'
         if to_date:
             if isinstance(to_date, datetime.datetime):
                 to_date = to_date.strftime('%Y-%m-%d')
