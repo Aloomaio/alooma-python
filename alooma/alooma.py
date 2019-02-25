@@ -1550,7 +1550,7 @@ class Client(object):
         res = self.__send_request(requests.get, url, params=params)
 
         cons = res.json()
-        if len(cons) == 0:
+        if not cons:
             raise Exception("Consolidation DNE: %s" % event_type)
 
         return cons[0]
