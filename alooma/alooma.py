@@ -1544,16 +1544,21 @@ class Client(object):
         return self.__send_request(requests.get, url).json()
 
     def get_query_by_event_type(self, event_type):
-    	""" Return scheduled query by event type """
+        """ Return scheduled query by event type """
         params = {"event_type": event_type}
         url = self.rest_url + endpoints.CONSOLIDATION_V2
+
         res = self.__send_request(requests.get, url, params=params)
+        res.raise_for_status()
 
-        cons = res.json()
-        if not cons:
-            raise Exception("Consolidation DNE: %s" % event_type)
+        queries = res.json()
+        if not queries:
+            raise Exception("Query does not exist: %s" % event_type)
+        elif len(queries) > 1:
+            raise Exception('Event Type %s has duplicate consolidations' %
+                            (event_type))
 
-        return cons[0]
+        return queries[0]
 
     def remove_scheduled_query(self, query_id):
         url = self.rest_url + endpoints.CONSOLIDATION_STATE_V2.format(
