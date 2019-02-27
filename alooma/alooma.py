@@ -1575,7 +1575,7 @@ class Client(object):
         :param configuration: requires event_type and frequency
         :param custom_variables: custom variables to add to consolidation
 	    """
-	    if "deployment_name" not in configuration:
+        if "deployment_name" not in configuration:
             deployment_name = self.get_deployment_info()['deploymentName']
             configuration["deployment_name"] = deployment_name
 
