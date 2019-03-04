@@ -902,18 +902,13 @@ class Client(object):
         """
         Get restream stats;
         - number of available events to restream
-        - Restream used size in bytes
-        - Max restream size in bytes
-        :return: :type dict with the following keys; number_of_events,
-                       size_used, max_size
+        :return: :type dict with the following keys; number_of_events
         """
         restream_stats = next(node["stats"]
                               for node in self.get_structure()["nodes"]
                               if node["type"] == RESTREAM_QUEUE_TYPE_NAME)
         return {
-            "number_of_events": restream_stats["availbleForRestream"],
-            "size_used": restream_stats["currentQueueSize"],
-            "max_size": restream_stats["maxQueueSize"]
+            "number_of_events": restream_stats["availbleForRestream"]
         }
 
     def get_throughput_by_name(self, name):
