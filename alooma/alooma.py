@@ -1581,6 +1581,23 @@ class Client(object):
         return {k: all_queries[k] for k in all_queries.keys()
                 if all_queries[k]['status'] not in ['active', 'done']}
 
+    def schedule_default_query(self, configuration, custom_variables=None):
+        """ Create Default Consolidation Query Given Configuration
+
+        :param configuration: requires event_type and frequency
+        :param custom_variables: custom variables to add to consolidation
+	    """
+        if custom_variables:
+            if "custom_variables" not in configuration:
+                configuration["custom_variables"] = {}
+            configuration["custom_variables"].update(custom_variables)
+
+        url = self.rest_url + endpoints.CONSOLIDATION_V2
+        res = self.__send_request(requests.post, url, json=configuration)
+        res.raise_for_status()
+
+        return res.json()
+
     def schedule_query(self, event_type, query, frequency=None, run_at=None):
         """ Return Requests Response to Create Query
 
