@@ -1538,6 +1538,15 @@ class Client(object):
         url = self.rest_url + endpoints.CONSOLIDATION_V2
         return self.__send_request(requests.get, url).json()
 
+    def get_queries_in_error_state(self):
+            """
+            Returns all scheduled queries that have not successfully ran on
+            the last attempt
+            :return: a list representing all failed scheduled queries
+            """
+            all_queries = self.get_queries()
+            return [query for query in all_queries if query['error_message']]
+
     def get_query_by_event_type(self, event_type):
         """ Return scheduled query by event type """
         params = {"event_type": event_type}
