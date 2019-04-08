@@ -406,15 +406,21 @@ class Client(object):
         raise Exception('Could not locate transform id for %s' %
                         self.account_name)
 
-    def remove_input(self, input_id):
+    def remove_input(self, input_id, with_mapping=False, with_data=False):
         """
         :param input_id: the id for a given input
+        :param with_mapping: flag for deleting input's event types
+        :param with_data: flag deleting input's target tables
 
         for example:
                 This can be found in the url in the input settings
         """
         url = "{rest_url}plumbing/nodes/remove/{input_id}".format(
             rest_url=self.rest_url, input_id=input_id)
+        if with_mapping:
+            url += '?with_mapping=true'
+            if with_data:
+                url += '&with_data=true'
         self.__send_request(requests.post, url)
 
     def set_transform_to_default(self):
