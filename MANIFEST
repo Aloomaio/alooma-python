@@ -4,3 +4,4 @@ setup.cfg
 setup.py
 alooma/__init__.py
 alooma/alooma.py
+alooma/endpoints.py
